@@ -1,12 +1,21 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from todo.models import Task
 
 def home(request):
-    return render(request,'home.html')
+    tasks = Task.objects.filter(is_completed=True).order_by('-updated_at')
+    context = {'tasks': tasks}
+    return render(request, 'home.html', context)
 
 def addTask(request):
     if request.method == "POST":
-        task = request.POST.get("task")
-        # You can save to DB here later
-        return HttpResponse(f"Task added: {task}")
-    return redirect("home")
+        task_text = request.POST.get("task")
+        if task_text:
+            Task.objects.create(task=task_text, is_completed=False)
+    return redirect('home')
+
+
+
+
+
+
+
